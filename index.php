@@ -110,6 +110,10 @@ $isLive = ($day == "Sunday" && $hour >= 10 && $hour < 12);
             object-fit: cover;
             border-radius: 8px;
         }
+        .btn btn-outline:hover{
+    background: white;
+    color: var(--primary-navy);
+        }
     </style>
 </head>
 <body>
