@@ -1,6 +1,6 @@
 <?php
-// PHP Logic: Check if it's currently Sunday between 10 AM and 12 PM for the Live Badge
-date_default_timezone_set('Africa/Kigali'); // Set to your local time
+// Set local time for your dynamic "Live" badge logic
+date_default_timezone_set('Africa/Kigali'); 
 $day = date('l');
 $hour = (int)date('G');
 $isLive = ($day == "Sunday" && $hour >= 10 && $hour < 12);
@@ -12,175 +12,144 @@ $isLive = ($day == "Sunday" && $hour >= 10 && $hour < 12);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grace Church | Welcome Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-navy: #1a2a44;
             --accent-gold: #c5a059;
             --live-red: #e74c3c;
-            --text-light: #f4f4f4;
-            --text-dark: #333;
+            --glass: rgba(255, 255, 255, 0.1);
         }
 
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
+        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
 
-        /* Hero Section */
-        .hero {
-            height: 80vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('https://images.unsplash.com/photo-1510519133417-2467bcaf9034?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-        }
-
-        .hero h1 { font-size: 4rem; margin-bottom: 10px; letter-spacing: 2px; }
-        
-        .btn {
-            padding: 12px 30px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            margin: 10px;
-            display: inline-block;
-        }
-
-        .btn-gold { background: var(--accent-gold); color: white; }
-        .btn-outline { border: 2px solid white; color: white; }
-
-        /* Service Cards */
-        .service-section {
-            background: var(--primary-navy);
-            padding: 60px 20px;
-            text-align: center;
-            color: white;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1100px;
-            margin: 40px auto;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .live-badge {
-            background: var(--live-red);
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            border-radius: 3px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Ministries */
-        .ministries { padding: 80px 20px; background: #f9f9f9; text-align: center; }
-
-        .m-card img {
+        /* 1. STICKY TRANSPARENT HEADER */
+        header {
+            position: fixed;
+            top: 0;
             width: 100%;
-            height: 200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            z-index: 1000;
+            transition: 0.4s ease;
+            box-sizing: border-box;
+        }
+
+        /* Header change on scroll */
+        header.scrolled {
+            background: var(--primary-navy);
+            padding: 12px 5%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; font-style: italic; }
+        
+        nav a { color: white; text-decoration: none; margin-left: 25px; font-weight: 500; font-size: 0.9rem; transition: 0.3s; }
+        nav a:hover { color: var(--accent-gold); }
+
+        .header-btns { display: flex; gap: 10px; margin-left: 20px; }
+        .btn-sm { padding: 8px 16px; font-size: 0.8rem; border-radius: 4px; text-transform: uppercase; }
+
+        /* 2. HERO SECTION WITH VIDEO BACKGROUND */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translate(-50%, -50%);
             object-fit: cover;
-            border-radius: 8px;
         }
-        .btn btn-outline:hover{
-    background: white;
-    color: var(--primary-navy);
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Darken video for text readability */
+            z-index: 0;
         }
+
+        .hero-content { z-index: 1; max-width: 800px; padding: 20px; }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin: 0; letter-spacing: 4px; }
+        .hero-content p { font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9; }
+
+        /* BUTTONS */
+        .btn { padding: 15px 35px; border-radius: 5px; text-decoration: none; font-weight: 700; transition: 0.3s; display: inline-block; margin: 5px; }
+        .btn-gold { background: var(--accent-gold); color: white; border: 1px solid var(--accent-gold); }
+        .btn-outline { border: 2px solid white; color: white; }
+        .btn-gold:hover { background: transparent; color: var(--accent-gold); }
+
+        /* REST OF CONTENT */
+        .content-section { padding: 100px 10%; text-align: center; background: white; }
     </style>
 </head>
 <body>
 
-    <header class="hero">
-        <h1>WELCOME HOME</h1>
-        <p>Join us this Sunday at 10:00 AM</p>
-        <div class="cta-group">
-            <a href="#visit" class="btn btn-gold">Plan Your Visit</a>
-            <a href="#watch" class="btn btn-outline">Watch Live</a>
+    <header id="main-header">
+        <a href="#" class="logo">Grace Church</a>
+        <nav>
+            <a href="#">About</a>
+            <a href="#">Ministries</a>
+            <a href="#">Sermons</a>
+            <a href="#">Events</a>
+            <a href="#">Contact</a>
+        </nav>
+        <div class="header-btns">
+            <a href="#" class="btn btn-gold btn-sm">Visit Us</a>
+            <a href="#" class="btn btn-outline btn-sm" style="border-color: var(--accent-gold); color: var(--accent-gold);">Watch Online</a>
         </div>
     </header>
 
-    <section class="service-section">
-        <h2>SERVICE TIMES</h2>
-        <div class="grid">
-            <div class="card">
-                <?php if($isLive): ?>
-                    <span class="live-badge">LIVE NOW</span>
-                <?php endif; ?>
-                <h3>Sunday Worship</h3>
-                <p>10:00 AM</p>
-                <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">Watch Now</a>
-            </div>
-            <div class="card">
-                <h3>Youth Night</h3>
-                <p>Friday 6:00 PM</p>
-                <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">Watch Now</a>
-            </div>
-            <div class="card">
-                <h3>Prayer Meeting</h3>
-                <p>Wednesday 7:00 PM</p>
-                <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">Watch Now</a>
+    <section class="hero">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-sun-shining-through-the-branches-of-a-tree-40244-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        
+        <div class="hero-content">
+            <h1>WELCOME HOME</h1>
+            <p>Join us this Sunday at 10:00 AM</p>
+            <div class="cta-group">
+                <a href="#visit" class="btn btn-gold">Plan Your Visit</a>
+                <a href="#watch" class="btn btn-outline">Watch Live</a>
             </div>
         </div>
     </section>
 
-    <section class="ministries">
-        <h2>OUR MINISTRIES</h2>
-        <div class="grid">
-            <div class="m-card">
-                <img src="https://images.unsplash.com/photo-1472653431158-6364773b2a56?auto=format&fit=crop&w=400&q=80" alt="Kids">
-                <h4>Kids Ministry</h4>
-            </div>
-            <div class="m-card">
-                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80" alt="Youth">
-                <h4>Youth Group</h4>
-            </div>
-            <div class="m-card">
-                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80" alt="Worship">
-                <h4>Worship Team</h4>
-            </div>
-        </div>
+    <section class="content-section" id="visit">
+        <h2>Our Mission & Beliefs</h2>
+        <p>We exist to love God, love people, and make disciples of Jesus Christ.</p>
     </section>
 
     <script>
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+        // Header Scroll Effect
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
-
-        console.log("Grace Church Site Loaded Successfully!");
     </script>
+
 </body>
 </html>
